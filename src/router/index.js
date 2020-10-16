@@ -164,6 +164,47 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
+console.log('route debug')
+
+import request from '@/utils/request'
+
+const requestResetMenusAndRoute = async function() {
+  let menus = []
+  await request({ url: 'http://localhost:8080/api/auth/menus', method: 'get' })
+    .then(function(resp) {
+      menus = resp.data
+      console.log('request', menus)
+    })
+
+  initMenus(menus)
+  resetRouter()// 重置路由
+  return menus
+}
+
+const initMenus = function(menus) {
+  for (const i in menus) {
+    const menu = menus[i]
+    if (menu.uri === '' || menu.uri === '/') {
+      continue
+    }
+    const route = {
+      path: '/' + menu.uri,
+      name: 'title' + menu.title,
+      component: Layout,
+      children: [
+        {
+          path: menu.uri,
+          name: menu.uri + menu.title,
+          component: () => import('@/views/auth/menu/index'),
+          meta: { title: menu.title }
+        }
+      ]
+    }
+    constantRoutes.push(route)
+  }
+  console.log(constantRoutes)
+}
+
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
@@ -177,5 +218,7 @@ export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
 }
+
+requestResetMenusAndRoute()
 
 export default router
