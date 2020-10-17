@@ -53,157 +53,68 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
-  },
-
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  }
 ]
 
-console.log('route debug')
+let leftMenus = sessionStorage.getItem('LEFT_MENUS')
+let allMenu = JSON.parse(leftMenus)
+console.log(allMenu)
 
-import request from '@/utils/request'
-
-const requestResetMenusAndRoute = async function() {
-  let menus = []
-  await request({ url: 'http://localhost:8080/api/auth/menus', method: 'get' })
-    .then(function(resp) {
-      menus = resp.data
-      console.log('request', menus)
-    })
-
-  initMenus(menus)
-  resetRouter()// 重置路由
-  return menus
+let hasChild = (menu) => {
+  for (let i in allMenu) {
+    if (allMenu[i].parentId === menu.id) {
+      return true
+    }
+  }
+  return false
 }
 
-const initMenus = function(menus) {
-  for (const i in menus) {
-    const menu = menus[i]
-    if (menu.uri === '' || menu.uri === '/') {
-      continue
+let getChildren = (parent, result) => {
+  for (let i in allMenu) {
+    let menu = allMenu[i]
+    if (menu.parentId === parent.id) {
+      if (menu.component === null || menu.component === '') {
+          continue
+      }
+
+      let path = '/views/auth/menu/index'
+      let route = {
+        path: menu.uri,
+        name: menu.title,
+        component: () => import('@/views/auth/menu/index'),
+        meta: { title: menu.title, icon: menu.icon }
+      }
+      if (hasChild(menu)) {    
+        console.log('hasChild',menu)
+        route.children = getChildren(menu, [])
+      }
+      result.push(route)
     }
-    const route = {
-      path: '/' + menu.uri,
-      name: 'title' + menu.title,
+  }
+  return result
+}
+
+allMenu.forEach(menu => {
+  if (menu.parentId === 0) {
+    let route = {
+      path: menu.uri,
       component: Layout,
-      children: [
-        {
-          path: menu.uri,
-          name: menu.uri + menu.title,
-          component: () => import('@/views/auth/menu/index'),
-          meta: { title: menu.title }
-        }
-      ]
+      name: menu.title + 'parent',
+      meta: { title: menu.title, icon: 'el-icon-s-help' },
+    }
+    if (hasChild(menu)) {
+      route.children = getChildren(menu, [])
     }
     constantRoutes.push(route)
   }
-  console.log(constantRoutes)
-}
+})
+
+console.log(constantRoutes)
+
+
+
+console.log('route debug')
+
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
@@ -218,7 +129,5 @@ export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
 }
-
-requestResetMenusAndRoute()
 
 export default router

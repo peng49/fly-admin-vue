@@ -2,7 +2,14 @@
   <div class="app-container">
     <div class="header-box">
       <el-row class="right-row">
-        <el-button type="primary" style="margin:0 0 20px 20px;" size="mini" icon="el-icon-circle-plus-outline" @click="openForm">添加菜单</el-button>
+        <el-button
+          type="primary"
+          style="margin: 0 0 20px 20px"
+          size="mini"
+          icon="el-icon-circle-plus-outline"
+          @click="openForm"
+          >添加菜单</el-button
+        >
       </el-row>
     </div>
     <div class="content-box">
@@ -26,81 +33,176 @@
         <el-table-column prop="createdAt" label="创建时间" align="center" />
         <el-table-column prop="updatedAt" label="更新时间" align="center" />
         <el-table-column label="操作">
-          <el-button size="mini">编辑</el-button>
+          <template slot-scope="{ row }">
+            <el-button size="mini" @click="onEdit(row)">编辑</el-button>
+            <el-button size="mini" @click="onDelete(row)" type="danger"
+              >删除</el-button
+            >
+          </template>
         </el-table-column>
       </el-table>
     </div>
+
+    <el-dialog :visible.sync="dialogEditOption.open" title="编辑">
+      <el-form size="small" label-width="80px" class="demo-form-inline">
+        <el-form-item label="上级菜单">
+          <el-cascader
+            :options="menuTree"
+            :props="{ label: 'title', value: 'id' }"
+            change-on-select
+            v-model="editForm.parentId"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="标题">
+          <el-input v-model="editForm.title" style="width: 90%" />
+        </el-form-item>
+        <el-form-item label="Uri">
+          <el-input v-model="editForm.uri" style="width: 90%" />
+        </el-form-item>
+        <el-form-item label="Vue 组件">
+          <el-input v-model="editForm.component" style="width: 90%" />
+        </el-form-item>
+        <el-form-item label="图标">
+          <el-input v-model="editForm.icon" style="width: 90%" />
+        </el-form-item>
+        <el-form-item label="序号">
+          <el-input v-model="editForm.sort" style="width: 90%" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onCancel">取 消</el-button>
+        <el-button type="primary" @click="onSubmit">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
-  <!-- <editForm v-bind.sync="dialogEditOption" /> -->
 </template>
 
 <script>
-import request from '@/utils/request'
-// import { editForm } from './dialog/editForm'
+import request from "@/utils/request";
+import { addMenu, deleteMenu, editMenu } from "@/api/admin/menu";
 
 export default {
+  name: "adminMenuManager",
   // components: { editForm },
   data() {
     return {
       listLoading: true,
       dialogEditOption: {
         open: false,
-        data: {}
+      },
+      editForm: {
+        parentId: 0,
+        title: "",
+        uri: "",
+        component: "",
+        icon: "",
+        sort: 0,
       },
       menus: [],
-      menuTree: []
-    }
+      menuTree: [],
+    };
   },
   created() {
-    this.getMenus()
+    this.getMenus();
   },
   methods: {
     hasChild(parent) {
       for (const i in this.menus) {
-        const menu = this.menus[i]
+        const menu = this.menus[i];
         if (menu.parentId === parent.id) {
-          return true
+          return true;
         }
       }
-      return false
+      return false;
     },
     getChildren(parent) {
-      const items = []
+      const items = [];
       for (const i in this.menus) {
-        const menu = this.menus[i]
+        const menu = this.menus[i];
         if (menu.parentId === parent.id) {
-          items.push(menu)
+          if (this.hasChild(menu)) {
+            menu.children = this.getChildren(menu);
+          }
+          items.push(menu);
         }
       }
-      return items
+      return items;
     },
     initTree() {
       for (const i in this.menus) {
-        const menu = this.menus[i]
+        const menu = this.menus[i];
         if (menu.parentId !== 0) {
-          continue
+          continue;
         }
 
         if (this.hasChild(menu)) {
-          menu.children = this.getChildren(menu)
+          menu.children = this.getChildren(menu);
         }
-        this.menuTree.push(menu)
+        this.menuTree.push(menu);
       }
-      this.listLoading = false
+      this.listLoading = false;
     },
     getMenus() {
-      const _this = this
-      _this.menus = []
-      _this.menuTree = []
-      request({ url: 'http://localhost:8080/api/auth/menus', method: 'get' })
-        .then(function(resp) {
-          _this.menus = resp.data
-          _this.initTree()
-        })
+      const _this = this;
+      _this.menus = [];
+      _this.menuTree = [];
+      request({
+        url: "http://localhost:8080/api/auth/menus",
+        method: "get",
+      }).then(function (resp) {
+        _this.menus = resp.data;
+        _this.initTree();
+      });
     },
     openForm() {
-      this.open = true
-    }
-  }
-}
+      this.dialogEditOption.open = true;
+    },
+    onEdit(menu) {
+      this.dialogEditOption.open = true;
+      this.editForm = menu;
+    },
+    onDelete(row) {
+      let _this = this;
+      this.$confirm("确认删除？", {
+        closeOnPressEscape: false,
+        closeOnClickModal: false,
+      })
+        .then(() => {
+          deleteMenu(row).then((resp) => {
+            _this.getMenus();
+          });
+        })
+        .catch(() => {});
+    },
+    onCancel() {
+      this.dialogEditOption.open = false;
+      this.editForm = { parentId: 0 };
+    },
+    onSubmit() {
+      if (this.editForm.parentId.length > 0) {
+        this.editForm.parentId = this.editForm.parentId[
+          this.editForm.parentId.length - 1
+        ];
+      } else {
+        if (this.editForm.parentId === undefined) {
+          this.editForm.parentId = 0;
+        }
+      }
+      console.log(this.editForm);
+
+      let res;
+
+      if (this.editForm.id > 0) {
+        res = editMenu(this.editForm);
+      } else {
+        res = addMenu(this.editForm);
+      }
+      this.dialogEditOption.open = false;
+      res.then((resp) => {
+        //刷新列表数据
+        this.getMenus();
+      });
+    },
+  },
+};
 </script>

@@ -1,4 +1,5 @@
 import { login, logout, getInfo } from '@/api/user'
+import { getAllMenu } from '@/api/admin/menu'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -35,8 +36,12 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
+        setToken(data.token) 
+
+        getAllMenu().then(resp =>{
+            sessionStorage.setItem('LEFT_MENUS', JSON.stringify(resp.data))
+            resolve()
+        })  
       }).catch(error => {
         reject(error)
       })
