@@ -8,46 +8,52 @@
           size="mini"
           icon="el-icon-circle-plus-outline"
           @click="onAdd"
-        >添加角色</el-button>
+        >添加权限</el-button>
       </el-row>
     </div>
     <div class="content-box">
       <el-table
         v-loading="listLoading"
-        :data="roles"
+        :data="permissions"
         element-loading-text="Loading"
         border
         fit
         highlight-current-row
       >
         <el-table-column prop="id" label="ID" />
-        <el-table-column prop="name" label="角色名" />
-        <el-table-column prop="createdAt" label="创建时间" align="center" />
-        <el-table-column prop="updatedAt" label="更新时间" align="center" />
+        <el-table-column prop="name" label="权限名" />
+        <el-table-column prop="slug" label="标识" />
+        <el-table-column prop="httpMethod" label="Http方法" />
+        <el-table-column prop="httpPath" label="路径" />
+        <el-table-column prop="createdAt" label="创建时间" />
+        <el-table-column prop="updatedAt" label="更新时间" />
         <el-table-column label="操作">
           <template slot-scope="{ row }">
             <el-button size="mini" @click="onEdit(row)">编辑</el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="onDelete(row)"
-            >删除</el-button>
+            <el-button size="mini" type="danger" @click="onDelete(row)">
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-
     <el-dialog
       :visible.sync="edit"
       :close-on-click-modal="false"
-      :title="editForm.id > 0 ? '编辑角色' : '添加角色'"
+      :title="editForm.id > 0 ? '编辑权限' : '添加权限'"
     >
-      <el-form size="small" label-width="80px" class="demo-form-inline">
-        <el-form-item label="角色名">
+      <el-form size="small" label-width="120px" class="demo-form-inline">
+        <el-form-item label="名称">
           <el-input v-model="editForm.name" style="width: 90%" />
         </el-form-item>
-        <el-form-item label="Slug">
+        <el-form-item label="标识">
           <el-input v-model="editForm.slug" style="width: 90%" />
+        </el-form-item>
+        <el-form-item label="Http Method">
+          <el-input v-model="editForm.httpMethod" style="width: 90%" />
+        </el-form-item>
+        <el-form-item label="Http Path">
+          <el-input v-model="editForm.httpPath" type="textarea" :rows="10" style="width: 90%" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -59,25 +65,31 @@
 </template>
 
 <script>
-import { getRoles, editRole, addRole, deleteRole } from '@/api/admin/role'
+import {
+  getPermissions,
+  addPermission,
+  editPermission,
+  deletePermission
+} from '@/api/admin/permission'
 
 export default {
-  name: 'AdminRoleManager',
+  name: 'AdminUserManager',
   data() {
     return {
       listLoading: true,
-      roles: [],
+      permissions: [],
       edit: false,
       editForm: {}
     }
   },
   created() {
-    this.renderRoles()
+    this.renderList()
   },
   methods: {
-    renderRoles() {
-      getRoles().then((resp) => {
-        this.roles = resp.data
+    renderList() {
+      console.log('getPermissions')
+      getPermissions().then((resp) => {
+        this.permissions = resp.data
         this.listLoading = false
       })
     },
@@ -85,17 +97,17 @@ export default {
       this.edit = true
       this.editForm = {}
     },
-    onEdit(role) {
+    onEdit(permission) {
       this.edit = true
-      this.editForm = role
+      this.editForm = permission
     },
-    onDelete(role) {
+    onDelete(row) {
       this.$confirm('确认删除？', {
         closeOnPressEscape: false,
         closeOnClickModal: false
       }).then(() => {
-        deleteRole(role).then((resp) => {
-          this.renderRoles()
+        deletePermission(row).then((resp) => {
+          this.renderList()
         })
       })
     },
@@ -106,14 +118,14 @@ export default {
       console.log(this.editForm)
       let res
       if (this.editForm.id > 0) {
-        res = editRole(this.editForm)
+        res = editPermission(this.editForm)
       } else {
-        res = addRole(this.editForm)
+        res = addPermission(this.editForm)
       }
       res.then((resp) => {
         console.log(resp)
         this.edit = false
-        this.renderRoles()
+        this.renderList()
       })
     }
   }

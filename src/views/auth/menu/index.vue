@@ -8,8 +8,7 @@
           size="mini"
           icon="el-icon-circle-plus-outline"
           @click="openForm"
-          >添加菜单</el-button
-        >
+        >添加菜单</el-button>
       </el-row>
     </div>
     <div class="content-box">
@@ -35,23 +34,29 @@
         <el-table-column label="操作">
           <template slot-scope="{ row }">
             <el-button size="mini" @click="onEdit(row)">编辑</el-button>
-            <el-button size="mini" @click="onDelete(row)" type="danger"
-              >删除</el-button
-            >
+            <el-button
+              size="mini"
+              type="danger"
+              @click="onDelete(row)"
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
 
-    <el-dialog :visible.sync="dialogEditOption.open" title="编辑">
+    <el-dialog
+      :visible.sync="dialogEditOption.open"
+      :close-on-click-modal="false"
+      title="编辑"
+    >
       <el-form size="small" label-width="80px" class="demo-form-inline">
         <el-form-item label="上级菜单">
           <el-cascader
+            v-model="editForm.parentId"
             :options="menuTree"
             :props="{ label: 'title', value: 'id' }"
             change-on-select
-            v-model="editForm.parentId"
-          ></el-cascader>
+          />
         </el-form-item>
         <el-form-item label="标题">
           <el-input v-model="editForm.title" style="width: 90%" />
@@ -66,7 +71,7 @@
           <el-input v-model="editForm.icon" style="width: 90%" />
         </el-form-item>
         <el-form-item label="序号">
-          <el-input v-model="editForm.sort" style="width: 90%" />
+          <el-input-number v-model="editForm.sort" :min="0" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -78,131 +83,132 @@
 </template>
 
 <script>
-import request from "@/utils/request";
-import { addMenu, deleteMenu, editMenu } from "@/api/admin/menu";
+import request from '@/utils/request'
+import { addMenu, deleteMenu, editMenu } from '@/api/admin/menu'
 
 export default {
-  name: "adminMenuManager",
+  name: 'AdminMenuManager',
   // components: { editForm },
   data() {
     return {
       listLoading: true,
       dialogEditOption: {
-        open: false,
+        open: false
       },
       editForm: {
         parentId: 0,
-        title: "",
-        uri: "",
-        component: "",
-        icon: "",
-        sort: 0,
+        title: '',
+        uri: '',
+        component: '',
+        icon: '',
+        sort: 0
       },
       menus: [],
-      menuTree: [],
-    };
+      menuTree: []
+    }
   },
   created() {
-    this.getMenus();
+    this.getMenus()
   },
   methods: {
     hasChild(parent) {
       for (const i in this.menus) {
-        const menu = this.menus[i];
+        const menu = this.menus[i]
         if (menu.parentId === parent.id) {
-          return true;
+          return true
         }
       }
-      return false;
+      return false
     },
     getChildren(parent) {
-      const items = [];
+      const items = []
       for (const i in this.menus) {
-        const menu = this.menus[i];
+        const menu = this.menus[i]
         if (menu.parentId === parent.id) {
           if (this.hasChild(menu)) {
-            menu.children = this.getChildren(menu);
+            menu.children = this.getChildren(menu)
           }
-          items.push(menu);
+          items.push(menu)
         }
       }
-      return items;
+      return items
     },
     initTree() {
       for (const i in this.menus) {
-        const menu = this.menus[i];
+        const menu = this.menus[i]
         if (menu.parentId !== 0) {
-          continue;
+          continue
         }
 
         if (this.hasChild(menu)) {
-          menu.children = this.getChildren(menu);
+          menu.children = this.getChildren(menu)
         }
-        this.menuTree.push(menu);
+        this.menuTree.push(menu)
       }
-      this.listLoading = false;
+      this.listLoading = false
     },
     getMenus() {
-      const _this = this;
-      _this.menus = [];
-      _this.menuTree = [];
+      const _this = this
+      _this.menus = []
+      _this.menuTree = []
       request({
-        url: "http://localhost:8080/api/auth/menus",
-        method: "get",
-      }).then(function (resp) {
-        _this.menus = resp.data;
-        _this.initTree();
-      });
+        url: 'http://localhost:8080/api/auth/menus',
+        method: 'get'
+      }).then(function(resp) {
+        _this.menus = resp.data
+        _this.initTree()
+      })
     },
     openForm() {
-      this.dialogEditOption.open = true;
+      this.dialogEditOption.open = true
     },
     onEdit(menu) {
-      this.dialogEditOption.open = true;
-      this.editForm = menu;
+      this.dialogEditOption.open = true
+      this.editForm = menu
     },
     onDelete(row) {
-      let _this = this;
-      this.$confirm("确认删除？", {
+      const _this = this
+      this.$confirm('确认删除？', {
         closeOnPressEscape: false,
-        closeOnClickModal: false,
+        closeOnClickModal: false
       })
         .then(() => {
           deleteMenu(row).then((resp) => {
-            _this.getMenus();
-          });
+            _this.getMenus()
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
+
     onCancel() {
-      this.dialogEditOption.open = false;
-      this.editForm = { parentId: 0 };
+      this.dialogEditOption.open = false
+      this.editForm = { parentId: 0 }
     },
     onSubmit() {
       if (this.editForm.parentId.length > 0) {
         this.editForm.parentId = this.editForm.parentId[
           this.editForm.parentId.length - 1
-        ];
+        ]
       } else {
         if (this.editForm.parentId === undefined) {
-          this.editForm.parentId = 0;
+          this.editForm.parentId = 0
         }
       }
-      console.log(this.editForm);
+      console.log(this.editForm)
 
-      let res;
+      let res
 
       if (this.editForm.id > 0) {
-        res = editMenu(this.editForm);
+        res = editMenu(this.editForm)
       } else {
-        res = addMenu(this.editForm);
+        res = addMenu(this.editForm)
       }
-      this.dialogEditOption.open = false;
+      this.dialogEditOption.open = false
       res.then((resp) => {
-        //刷新列表数据
-        this.getMenus();
-      });
-    },
-  },
-};
+        // 刷新列表数据
+        this.getMenus()
+      })
+    }
+  }
+}
 </script>
