@@ -55,6 +55,14 @@
         <el-form-item label="确认密码">
           <el-input v-model="editForm.confirmPassword" style="width: 90%" />
         </el-form-item>
+        <el-form-item label="角色">
+          <el-select v-model="editForm.roleIds" style="width: 90%">
+            <el-option v-for="role in roles" :key="role.id" :label="role.name" :value="role.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="权限">
+          <el-input v-model="editForm.confirmPassword" style="width: 90%" />
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="onCancel">取 消</el-button>
@@ -66,6 +74,7 @@
 
 <script>
 import { getUsers, addUser, editUser, deleteUser } from '@/api/admin/user'
+import { getRoles } from '@/api/admin/role'
 
 export default {
   name: 'AdminUserManager',
@@ -73,18 +82,25 @@ export default {
     return {
       listLoading: true,
       users: [],
+      roles: [],
       edit: false,
       editForm: {}
     }
   },
   created() {
     this.renderList()
+    this.getRoles()
   },
   methods: {
     renderList() {
       getUsers().then((resp) => {
         this.users = resp.data
         this.listLoading = false
+      })
+    },
+    getRoles() {
+      getRoles().then(resp => {
+        this.roles = resp.data
       })
     },
     onAdd() {

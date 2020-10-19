@@ -49,6 +49,14 @@
         <el-form-item label="Slug">
           <el-input v-model="editForm.slug" style="width: 90%" />
         </el-form-item>
+        <el-form-item label="权限">
+          <el-transfer
+            v-model="editForm.permissionIds"
+            filterable
+            :data="permissions"
+            :titles="['可选权限', '已选权限']"
+          />
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="onCancel">取 消</el-button>
@@ -60,6 +68,7 @@
 
 <script>
 import { getRoles, editRole, addRole, deleteRole } from '@/api/admin/role'
+import { getPermissions } from '@/api/admin/permission'
 
 export default {
   name: 'AdminRoleManager',
@@ -68,17 +77,31 @@ export default {
       listLoading: true,
       roles: [],
       edit: false,
+      permissions: [],
       editForm: {}
     }
   },
   created() {
     this.renderRoles()
+    this.getPermissions()
   },
   methods: {
     renderRoles() {
       getRoles().then((resp) => {
         this.roles = resp.data
         this.listLoading = false
+      })
+    },
+    getPermissions() {
+      getPermissions().then(resp => {
+        const items = []
+        resp.data.forEach(permission => {
+          items.push({
+            key: permission.id,
+            label: permission.name
+          })
+        })
+        this.permissions = items
       })
     },
     onAdd() {
@@ -88,6 +111,8 @@ export default {
     onEdit(role) {
       this.edit = true
       this.editForm = role
+      console.log(this.permissions)
+      console.log(this.editForm)
     },
     onDelete(role) {
       this.$confirm('确认删除？', {
