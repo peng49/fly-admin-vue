@@ -51,7 +51,7 @@
         </el-form-item>
         <el-form-item label="权限">
           <el-transfer
-            v-model="editForm.permissionIds"
+            v-model="permissionIds"
             filterable
             :data="permissions"
             :titles="['可选权限', '已选权限']"
@@ -78,7 +78,9 @@ export default {
       roles: [],
       edit: false,
       permissions: [],
-      editForm: {}
+      permissionIds: [],
+      editForm: {
+      }
     }
   },
   created() {
@@ -102,17 +104,24 @@ export default {
           })
         })
         this.permissions = items
+        console.log(this.permissions)
       })
     },
     onAdd() {
       this.edit = true
       this.editForm = {}
+      this.permissionIds = []
     },
     onEdit(role) {
-      this.edit = true
-      this.editForm = role
-      console.log(this.permissions)
-      console.log(this.editForm)
+      const _this = this
+      _this.edit = true
+      _this.editForm = role
+
+      // 已有权限
+      _this.permissionIds = []
+      role.permissions.forEach(permission => {
+        _this.permissionIds.push(permission.id)
+      })
     },
     onDelete(role) {
       this.$confirm('确认删除？', {
@@ -128,7 +137,7 @@ export default {
       this.edit = false
     },
     onSubmit() {
-      console.log(this.editForm)
+      this.editForm.permissionIds = this.permissionIds
       let res
       if (this.editForm.id > 0) {
         res = editRole(this.editForm)

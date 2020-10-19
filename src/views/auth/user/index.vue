@@ -56,7 +56,7 @@
           <el-input v-model="editForm.confirmPassword" style="width: 90%" />
         </el-form-item>
         <el-form-item label="角色">
-          <el-select v-model="editForm.roleIds" style="width: 90%">
+          <el-select v-model="editForm.roleIds" multiple style="width: 90%">
             <el-option v-for="role in roles" :key="role.id" :label="role.name" :value="role.id" />
           </el-select>
         </el-form-item>
