@@ -54,6 +54,25 @@ export const constantRoutes = [
     }]
   },
   {
+    path: '/users',
+    component: Layout,
+    meta: { title: '用户管理' },
+    children: [
+      {
+        path: '',
+        name: 'Users',
+        component: () => import('@/views/user/index'),
+        meta: { title: '用户管理', icon: 'theme' }
+      },
+      {
+        path: 'oauth',
+        name: 'Oauth',
+        component: () => import('@/views/user/oauth'),
+        meta: { title: '第三方账户管理', icon: 'theme' }
+      }
+    ]
+  },
+  {
     path: '/posts',
     component: Layout,
     meta: { title: '文章管理' },
@@ -62,7 +81,13 @@ export const constantRoutes = [
         path: 'index',
         name: 'Themes',
         component: () => import('@/views/theme/index'),
-        meta: { title: '主题列表', icon: 'theme' }
+        meta: { title: '主题管理', icon: 'theme' }
+      },
+      {
+        path: 'comments',
+        name: 'Comment',
+        component: () => import('@/views/theme/comment'),
+        meta: { title: '评论管理', icon: 'theme' }
       }
     ]
   },
