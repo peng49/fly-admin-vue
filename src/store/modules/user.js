@@ -36,12 +36,12 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
-        setToken(data.token) 
+        setToken(data.token)
 
-        getAllMenu().then(resp =>{
-            sessionStorage.setItem('LEFT_MENUS', JSON.stringify(resp.data))
-            resolve()
-        })  
+        getAllMenu().then(resp => {
+          sessionStorage.setItem('LEFT_MENUS', JSON.stringify(resp.data))
+          resolve()
+        })
       }).catch(error => {
         reject(error)
       })
