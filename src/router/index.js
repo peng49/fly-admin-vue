@@ -78,6 +78,12 @@ export const constantRoutes = [
     meta: { title: '文章管理' },
     children: [
       {
+        path: 'column',
+        name: 'Column',
+        component: () => import('@/views/theme/index'),
+        meta: { title: '栏目管理', icon: 'theme' }
+      },
+      {
         path: 'index',
         name: 'Themes',
         component: () => import('@/views/theme/index'),
