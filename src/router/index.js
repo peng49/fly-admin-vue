@@ -80,7 +80,7 @@ export const constantRoutes = [
       {
         path: 'column',
         name: 'Column',
-        component: () => import('@/views/theme/index'),
+        component: () => import('@/views/theme/column'),
         meta: { title: '栏目管理', icon: 'theme' }
       },
       {
