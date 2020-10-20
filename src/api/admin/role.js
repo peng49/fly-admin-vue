@@ -13,5 +13,5 @@ export function editRole(params) {
 }
 
 export function deleteRole(params) {
-  return request.delete('http://localhost:8080/api/auth/roles/' + params.id)
+  return request.delete('auth/roles/' + params.id)
 }

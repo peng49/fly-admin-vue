@@ -1,17 +1,17 @@
 import request from '@/utils/request'
 
 export function getPermissions() {
-  return request.get('http://localhost:8080/api/auth/permissions')
+  return request.get('auth/permissions')
 }
 
 export function addPermission(params) {
-  return request.post('http://localhost:8080/api/auth/permissions', params)
+  return request.post('auth/permissions', params)
 }
 
 export function editPermission(params) {
-  return request.put('http://localhost:8080/api/auth/permissions/' + params.id, params)
+  return request.put('auth/permissions/' + params.id, params)
 }
 
 export function deletePermission(params) {
-  return request.delete('http://localhost:8080/api/auth/permissions/' + params.id)
+  return request.delete('api/auth/permissions/' + params.id)
 }
