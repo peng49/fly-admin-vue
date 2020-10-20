@@ -7,7 +7,7 @@
           style="margin: 0 0 20px 20px"
           size="mini"
           icon="el-icon-circle-plus-outline"
-          @click="onEdit"
+          @click="onAdd"
         >添加栏目</el-button>
       </el-row>
     </div>
@@ -26,11 +26,12 @@
         <el-table-column label="操作">
           <template slot-scope="{ row }">
             <el-button size="mini" @click="onEdit(row)">编辑</el-button>
-            <el-button
+            <!-- <el-button
               size="mini"
               type="danger"
               @click="onDelete(row)"
-            >删除</el-button>
+            >删除</el-button> -->
+            <el-button size="mini" :type="row.status == 1?'danger':'primary'" v-text="row.status == 1?'禁用':'启用'" />
           </template>
         </el-table-column>
       </el-table>
@@ -80,6 +81,10 @@ export default {
         this.columns = resp.data
         this.listLoading = false
       })
+    },
+    onAdd() {
+      this.editForm = {}
+      this.edit = true
     },
     onEdit(column) {
       this.editForm = column

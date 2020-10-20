@@ -1,10 +1,125 @@
 <template>
-  <div />
+  <div class="app-container">
+    <div class="header-box">
+      <el-row class="right-row">
+        <el-button
+          type="primary"
+          style="margin: 0 0 20px 20px"
+          size="mini"
+          icon="el-icon-circle-plus-outline"
+          @click="onAdd"
+        >添加用户</el-button>
+      </el-row>
+    </div>
+    <div class="content-box">
+      <el-table
+        v-loading="listLoading"
+        :data="users"
+        element-loading-text="Loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column prop="id" label="ID" width="80px" align="center" />
+        <el-table-column prop="username" label="用户名" />
+        <el-table-column prop="email" label="邮箱" />
+        <el-table-column prop="signature" label="签名" />
+        <el-table-column prop="city" label="城市" />
+        <el-table-column prop="createTime" label="注册时间" />
+        <el-table-column prop="isAdmin" label="是否是管理员" align="center">
+          <template slot-scope="{ row }">
+            <el-tag v-if="row.isAdmin == 1">是</el-tag>
+            <el-tag v-else type="info">否</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="{ row }">
+            <el-button size="mini" @click="onEdit(row)">编辑</el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="onDelete(row)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <el-dialog
+      :visible.sync="edit"
+      :close-on-click-modal="false"
+      :title="editForm.id > 0 ? '编辑用户' : '添加用户'"
+    >
+      <el-form size="small" label-width="120px" class="demo-form-inline">
+        <el-form-item label="用户名">
+          <el-input v-model="editForm.username" style="width: 90%" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onCancel">取 消</el-button>
+        <el-button type="primary" @click="onSubmit">确 定</el-button>
+      </span>
+    </el-dialog>
+  </div>
 </template>
 <script>
+import { addUser, editUser, queryUser } from '@/api/user'
+
 export default {
+  name: 'UserManager',
   data() {
-    return {}
+    return {
+      listLoading: true,
+      users: [],
+      edit: false,
+      editForm: {
+
+      }
+    }
+  },
+  created() {
+    this.renderList()
+  },
+  methods: {
+    renderList() {
+      this.listLoading = true
+      queryUser().then(resp => {
+        this.users = resp.data
+        this.listLoading = false
+      })
+    },
+    onAdd() {
+      this.edit = true
+      this.editForm = {}
+    },
+    onEdit(user) {
+      this.editForm = user
+      this.edit = true
+    },
+    onCancel() {
+      this.edit = false
+    },
+    onSubmit() {
+      let res
+      if (this.editForm.id > 0) {
+        res = editUser(this.editForm)
+      } else {
+        res = addUser(this.editForm)
+      }
+      res.then(resp => {
+        this.edit = false
+        this.renderList()
+      })
+    },
+    onDelete(column) {
+      // this.$confirm('确认删除？', {
+      //   closeOnPressEscape: false,
+      //   closeOnClickModal: false
+      // }).then(() => {
+      //   deleteUser(column).then((resp) => {
+      //     this.renderList()
+      //   })
+      // })
+    }
   }
 }
 </script>

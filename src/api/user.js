@@ -1,11 +1,15 @@
 import request from '@/utils/request'
 
-export function login(data) {
-  return request({
-    url: 'http://localhost:9528/dev-api/vue-admin-template/user/login',
-    method: 'post',
-    data
-  })
+export function addUser(body) {
+  return request.post('users', body)
+}
+
+export function editUser(user) {
+  return request.put('users/' + user.id, user)
+}
+
+export function queryUser(query) {
+  return request.get('users', query)
 }
 
 export function getInfo(token) {
