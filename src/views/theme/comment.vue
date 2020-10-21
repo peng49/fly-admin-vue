@@ -9,7 +9,7 @@
       >
         <el-table-column prop="id" label="ID" />
         <el-table-column prop="commentTime" label="评论时间" />
-        <el-table-column label="评论时间">
+        <el-table-column label="评论内容">
           <template slot-scope="{ row}">
             <div v-html="row.content" />
           </template>

@@ -21,11 +21,20 @@
         highlight-current-row
       >
         <el-table-column prop="id" label="ID" width="80px" align="center" />
-        <el-table-column prop="username" label="用户名" />
+        <el-table-column label="用户名">
+          <template slot-scope="{ row }">
+            <router-link
+              :to="{name:'user.view',params:{'id':row.id}}"
+              class="link"
+              v-text="row.username"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="名称" />
         <el-table-column prop="email" label="邮箱" />
         <el-table-column prop="signature" label="签名" />
         <el-table-column prop="city" label="城市" />
-        <el-table-column prop="createTime" label="注册时间" />
+        <el-table-column prop="createdAt" label="注册时间" />
         <el-table-column prop="isAdmin" label="是否是管理员" align="center">
           <template slot-scope="{ row }">
             <el-tag v-if="row.isAdmin == 1">是</el-tag>
@@ -52,6 +61,15 @@
       <el-form size="small" label-width="120px" class="demo-form-inline">
         <el-form-item label="用户名">
           <el-input v-model="editForm.username" style="width: 90%" />
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="editForm.email" style="width: 90%" />
+        </el-form-item>
+        <el-form-item label="名称">
+          <el-input v-model="editForm.name" style="width: 90%" />
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="editForm.password" style="width: 90%" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">

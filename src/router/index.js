@@ -65,6 +65,11 @@ export const constantRoutes = [
         meta: { title: '用户管理', icon: 'theme' }
       },
       {
+        path: ':id',
+        name: 'user.view',
+        component: () => import('@/views/user/view')
+      },
+      {
         path: 'oauth',
         name: 'Oauth',
         component: () => import('@/views/user/oauth'),
@@ -96,6 +101,18 @@ export const constantRoutes = [
         meta: { title: '评论管理', icon: 'theme' }
       }
     ]
+  },
+  {
+    path: '/settings',
+    component: Layout,
+    meta: { title: '设置', icon: 'dashboard' },
+    alwaysShow: true,
+    children: [{
+      path: '',
+      name: 'Setting',
+      component: () => import('@/views/setting/index'),
+      meta: { title: '通用设置' }
+    }]
   },
   {
     path: '/admin/auth',

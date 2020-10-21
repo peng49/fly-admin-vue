@@ -20,7 +20,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column prop="id" label="ID" />
+        <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="name" label="栏目" />
         <el-table-column prop="sort" label="排序" align="center" />
         <el-table-column label="操作">
