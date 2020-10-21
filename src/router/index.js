@@ -103,16 +103,23 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/settings',
+    path: '/system',
     component: Layout,
-    meta: { title: '设置', icon: 'dashboard' },
+    meta: { title: '系统管理', icon: 'dashboard' },
     alwaysShow: true,
-    children: [{
-      path: '',
-      name: 'Setting',
-      component: () => import('@/views/setting/index'),
-      meta: { title: '通用设置' }
-    }]
+    children: [
+      {
+        path: 'settings',
+        name: 'Setting',
+        component: () => import('@/views/system/settings'),
+        meta: { title: '通用设置' }
+      }, {
+        path: 'friend-link',
+        name: 'system.friend-link',
+        component: () => import('@/views/system/friendLink'),
+        meta: { title: '友链管理' }
+      }
+    ]
   },
   {
     path: '/admin/auth',
