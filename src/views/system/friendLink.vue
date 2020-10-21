@@ -22,6 +22,8 @@
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="url" label="Url" align="center" />
         <el-table-column prop="status" label="状态" align="center" />
+        <el-table-column prop="createdAt" label="创建时间" align="center" />
+        <el-table-column prop="updatedAt" label="更新时间" align="center" />
         <el-table-column label="操作">
           <template slot-scope="{ row }">
             <el-button size="mini" @click="onEdit(row)">编辑</el-button>
