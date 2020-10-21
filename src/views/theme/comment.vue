@@ -33,8 +33,8 @@
         :page-size="pager.pageSize"
         layout="total, prev, pager, next"
         :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+        @size-change="renderList"
+        @current-change="renderList"
       />
     </div>
   </div>
@@ -47,7 +47,7 @@ export default {
     return {
       listLoading: true,
       comments: [],
-      pager: { page: 1, pageSize: 15 },
+      pager: { page: 1, pageSize: 10 },
       total: 0
     }
   },
@@ -61,12 +61,6 @@ export default {
         this.total = resp.data.total
         this.listLoading = false
       })
-    },
-    handleSizeChange() {
-      this.renderList()
-    },
-    handleCurrentChange() {
-      this.renderList()
     },
     onDelete(comment) {
       this.$confirm('确认删除？', {

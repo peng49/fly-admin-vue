@@ -54,6 +54,17 @@
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </span>
     </el-dialog>
+    <div class="pagination-container">
+      <el-pagination
+        background
+        :current-page.sync="pager.page"
+        :page-size="pager.pageSize"
+        layout="total, prev, pager, next"
+        :total="total"
+        @size-change="renderList"
+        @current-change="renderList"
+      />
+    </div>
   </div>
 </template>
 <script>
@@ -68,7 +79,9 @@ export default {
       edit: false,
       editForm: {
 
-      }
+      },
+      pager: { page: 1, pageSize: 15 },
+      total: 0
     }
   },
   created() {
@@ -77,8 +90,9 @@ export default {
   methods: {
     renderList() {
       this.listLoading = true
-      queryColumn().then(resp => {
-        this.columns = resp.data
+      queryColumn(this.pager).then(resp => {
+        this.columns = resp.data.items
+        this.total = resp.data.total
         this.listLoading = false
       })
     },
