@@ -65,9 +65,10 @@ export const constantRoutes = [
         meta: { title: '用户管理', icon: 'theme' }
       },
       {
-        path: ':id',
+        path: 'view/:id',
         name: 'user.view',
-        component: () => import('@/views/user/view')
+        component: () => import('@/views/user/view'),
+        hidden: true
       },
       {
         path: 'oauth',
