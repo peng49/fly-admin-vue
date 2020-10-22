@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 export function queryColumn(query) {
-  return request({ url: 'columns', method: 'get', query })
+  return request({ url: 'columns', method: 'get', params: query })
 }
 
 export function addColumn(params) {

@@ -1,5 +1,5 @@
 <template>
-<div class="createPost-container">
+  <div class="createPost-container">
     <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
 
       <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
@@ -15,49 +15,55 @@
         <el-row>
 
           <el-col :span="24">
-
+            <el-form-item style="margin-bottom: 40px;" prop="title">
+              <MDinput v-model="postForm.title" :maxlength="100" name="name" required>
+                标题
+              </MDinput>
+            </el-form-item>
             <div class="postInfo-container">
               <el-row>
                 <el-col :span="8">
-                  <el-form-item label-width="60px" label="Author:" class="postInfo-container-item">
-                    <el-select v-model="postForm.author" :remote-method="getRemoteUserList" filterable default-first-option remote placeholder="Search user">
-                      <el-option v-for="(item,index) in userListOptions" :key="item+index" :label="item" :value="item" />
+                  <el-form-item label-width="60px" label="作者:" class="postInfo-container-item">
+                    <el-select
+                      v-model="postForm.authorId"
+                      :remote-method="getRemoteUserList"
+                      filterable
+                      default-first-option
+                      remote
+                      placeholder="Search user"
+                    >
+                      <el-option v-for="user in users" :key="user.id" :label="user.username" :value="user.id" />
                     </el-select>
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="10">
-                  <el-form-item label-width="120px" label="Publish Time:" class="postInfo-container-item">
+                  <el-form-item label-width="120px" label="发布时间:" class="postInfo-container-item">
                     <el-date-picker v-model="displayTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="Select date and time" />
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="6">
-                  <el-form-item label-width="90px" label="Importance:" class="postInfo-container-item">
-                    <el-rate
-                      v-model="postForm.importance"
-                      :max="3"
-                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                      :low-threshold="1"
-                      :high-threshold="3"
-                      style="display:inline-block"
-                    />
+                  <el-form-item label-width="90px" label="栏目:" class="postInfo-container-item">
+                    <el-select
+                      v-model="postForm.columnId"
+                      :remote-method="getColumns"
+                      filterable
+                      default-first-option
+                      remote
+                      placeholder="Search Column"
+                    >
+                      <el-option v-for="column in columns" :key="column.id" :label="column.name" :value="column.id" />
+                    </el-select>
                   </el-form-item>
                 </el-col>
               </el-row>
             </div>
           </el-col>
         </el-row>
-
         <el-form-item prop="content" style="margin-bottom: 30px;">
           <Tinymce ref="editor" v-model="postForm.content" :height="400" />
         </el-form-item>
-
-        <el-form-item style="margin-bottom: 40px;" label-width="70px" label="Summary:">
-          <el-input v-model="postForm.content_short" :rows="1" type="textarea" class="article-textarea" autosize placeholder="Please enter the content" />
-          <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}words</span>
-        </el-form-item>
-
       </div>
     </el-form>
   </div>
@@ -66,23 +72,20 @@
 <script>
 import Sticky from '@/components/Sticky' // 粘性header组件
 import Tinymce from '@/components/Tinymce'
+import MDinput from '@/components/MDinput'
+import { addPost } from '@/api/post'
+import { queryUser } from '@/api/user'
+import { queryColumn } from '@/api/column'
 
 const defaultForm = {
   status: 'draft',
   title: '', // 文章题目
   content: '', // 文章内容
-  content_short: '', // 文章摘要
-  source_uri: '', // 文章外链
-  image_uri: '', // 文章图片
-  display_time: undefined, // 前台展示时间
-  id: undefined,
-  platforms: ['a-platform'],
-  comment_disabled: false,
-  importance: 0
+  id: undefined
 }
 export default {
   name: 'ArticleDetail',
-  components: { Sticky, Tinymce },
+  components: { Sticky, Tinymce, MDinput },
   props: {
     isEdit: {
       type: Boolean,
@@ -93,7 +96,8 @@ export default {
     return {
       postForm: Object.assign({}, defaultForm),
       loading: false,
-      userListOptions: [],
+      users: [],
+      columns: [],
       rules: {
 
       },
@@ -144,14 +148,16 @@ export default {
       this.$refs.postForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$notify({
-            title: '成功',
-            message: '发布文章成功',
-            type: 'success',
-            duration: 2000
+          this.postForm.status = 1
+          addPost(this.postForm).then(resp => {
+            this.loading = false
+            this.$notify({
+              title: '成功',
+              message: '发布文章成功',
+              type: 'success',
+              duration: 2000
+            })
           })
-          this.postForm.status = 'published'
-          this.loading = false
         } else {
           console.log('error submit!!')
           return false
@@ -174,8 +180,16 @@ export default {
       })
       this.postForm.status = 'draft'
     },
-    getRemoteUserList(query) {
-
+    getRemoteUserList(keyword) {
+      console.log(keyword)
+      queryUser({ pageSize: 15, keyword: keyword }).then(resp => {
+        this.users = resp.data.items
+      })
+    },
+    getColumns(keyword) {
+      queryColumn({ pageSize: 15, keyword: keyword }).then(resp => {
+        this.columns = resp.data.items
+      })
     }
   }
 }

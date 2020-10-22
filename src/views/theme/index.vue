@@ -9,13 +9,15 @@
           icon="el-icon-circle-plus-outline"
           @click="handleFilter"
         >筛选</el-button>
-        <el-button
-          plain
-          type="success"
-          style="float:right"
-          size="mini"
-          icon="el-icon-circle-plus-outline"
-        > <router-link :to="{name:'post.edit'}">新增文章</router-link></el-button>
+        <router-link :to="{name:'post.edit'}">
+          <el-button
+            plain
+            type="success"
+            style="float:right"
+            size="mini"
+            icon="el-icon-circle-plus-outline"
+          >新增文章</el-button>
+        </router-link>
       </el-row>
       <el-row v-if="filter">
         <el-form :inline="true" size="mini">

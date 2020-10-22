@@ -2,13 +2,23 @@
   <div class="app-container">
     <div class="header-box">
       <el-row class="right-row">
-        <el-button
-          type="primary"
-          style="margin: 0 0 20px 20px"
-          size="mini"
-          icon="el-icon-circle-plus-outline"
-          @click="onAdd"
-        >添加栏目</el-button>
+        <el-form :inline="true" size="mini">
+          <el-form-item>
+            <el-input v-model="queryForm.keyword" placeholder="请输入查询标题" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-search" plain @click="renderList">查询</el-button>
+            <el-button @click="resetQuery">重置</el-button>
+          </el-form-item>
+
+          <el-button
+            type="primary"
+            style="margin: 0 0 20px 20px;float:right"
+            size="mini"
+            icon="el-icon-circle-plus-outline"
+            @click="onAdd"
+          >添加用户</el-button>
+        </el-form>
       </el-row>
     </div>
     <div class="content-box">
@@ -71,7 +81,7 @@
 import { addColumn, queryColumn, editColumn, deleteColumn } from '@/api/column'
 
 export default {
-  // name: 'ColumnManager',
+  name: 'ColumnManager',
   data() {
     return {
       listLoading: true,
@@ -79,6 +89,9 @@ export default {
       edit: false,
       editForm: {
 
+      },
+      queryForm: {
+        keyword: ''
       },
       pager: { page: 1, pageSize: 10 },
       total: 0
@@ -88,9 +101,13 @@ export default {
     this.renderList()
   },
   methods: {
+    resetQuery() {
+      this.queryForm = {}
+      this.renderList()
+    },
     renderList() {
       this.listLoading = true
-      queryColumn(this.pager).then(resp => {
+      queryColumn(Object.assign(this.pager, this.queryForm)).then(resp => {
         this.columns = resp.data.items
         this.total = resp.data.total
         this.listLoading = false
