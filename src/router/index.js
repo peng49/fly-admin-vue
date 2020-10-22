@@ -106,14 +106,14 @@ export const constantRoutes = [
   {
     path: '/system',
     component: Layout,
-    meta: { title: '系统管理', icon: 'settings' },
+    meta: { title: '系统管理', icon: 'setting' },
     alwaysShow: true,
     children: [
       {
         path: 'settings',
         name: 'Setting',
         component: () => import('@/views/system/settings'),
-        meta: { title: '通用设置', icon: 'setting' }
+        meta: { title: '通用设置', icon: 'empty' }
       }, {
         path: 'friend-link',
         name: 'system.friend-link',

@@ -17,7 +17,9 @@
         :data="posts"
         element-loading-text="Loading"
         border
+        @selection-change="handleSelectionChange"
       >
+        <el-table-column type="selection" width="55" align="center" />
         <el-table-column prop="title" label="标题" align="center" />
         <el-table-column prop="column.name" label="栏目" />
         <el-table-column prop="author.username" label="作者" />
@@ -77,12 +79,12 @@ export default {
   data() {
     return {
       listLoading: true,
-      columns: [],
+      posts: [],
       edit: false,
       editForm: {
 
       },
-      pager: { page: 1, pageSize: 15 },
+      pager: { page: 1, pageSize: 10 },
       total: 0
     }
   },
@@ -121,6 +123,9 @@ export default {
         //   this.renderList()
         // })
       })
+    },
+    handleSelectionChange(rows) {
+      console.log(rows)
     }
   }
 }
