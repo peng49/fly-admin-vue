@@ -96,6 +96,12 @@ export const constantRoutes = [
         meta: { title: '主题管理' }
       },
       {
+        path: 'edit',
+        name: 'post.edit',
+        component: () => import('@/views/theme/edit'),
+        hidden: true
+      },
+      {
         path: 'comments',
         name: 'Comment',
         component: () => import('@/views/theme/comment'),

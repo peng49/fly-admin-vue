@@ -15,8 +15,7 @@
           style="float:right"
           size="mini"
           icon="el-icon-circle-plus-outline"
-          @click="onAdd"
-        >新增文章</el-button>
+        > <router-link :to="{name:'post.edit'}">新增文章</router-link></el-button>
       </el-row>
       <el-row v-if="filter">
         <el-form :inline="true" size="mini">
@@ -24,8 +23,8 @@
             <el-input v-model="queryForm.keyword" placeholder="请输入查询标题" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" plain @click="onSearch">查询</el-button>
-            <el-button @click="onSearch">重置</el-button>
+            <el-button type="primary" icon="el-icon-search" plain @click="renderList">查询</el-button>
+            <el-button @click="resetQuery">重置</el-button>
           </el-form-item>
         </el-form>
       </el-row>
@@ -43,8 +42,8 @@
         <el-table-column prop="column.name" label="栏目" />
         <el-table-column prop="author.username" label="作者" />
         <el-table-column prop="status" label="状态" align="center" />
-        <el-table-column prop="viewCount" label="点击" align="center" />
-        <el-table-column prop="replyCount" label="回复" align="center" />
+        <el-table-column prop="viewCount" label="点击数" align="center" />
+        <el-table-column prop="replyCount" label="回复数" align="center" />
         <el-table-column prop="createdAt" label="创建时间" />
         <el-table-column prop="publishAt" label="发布时间" />
         <el-table-column label="操作">
@@ -124,9 +123,14 @@ export default {
         this.filter = true
       }
     },
+    resetQuery() {
+      this.queryForm = {}
+      this.renderList()
+    },
     renderList() {
       this.listLoading = true
-      queryPosts(this.pager).then(resp => {
+      const queryBody = Object.assign({}, this.pager, this.queryForm)
+      queryPosts(queryBody).then(resp => {
         this.posts = resp.data.items
         this.total = resp.data.total
         this.listLoading = false
@@ -148,9 +152,6 @@ export default {
       this.edit = false
     },
     onSubmit() {
-
-    },
-    onSearch() {
 
     },
     onDelete(column) {

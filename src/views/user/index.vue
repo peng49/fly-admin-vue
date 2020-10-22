@@ -2,13 +2,23 @@
   <div class="app-container">
     <div class="header-box">
       <el-row class="right-row">
-        <el-button
-          type="primary"
-          style="margin: 0 0 20px 20px"
-          size="mini"
-          icon="el-icon-circle-plus-outline"
-          @click="onAdd"
-        >添加用户</el-button>
+        <el-form :inline="true" size="mini">
+          <el-form-item>
+            <el-input v-model="queryForm.keyword" placeholder="请输入查询标题" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-search" plain @click="renderList">查询</el-button>
+            <el-button @click="resetQuery">重置</el-button>
+          </el-form-item>
+
+          <el-button
+            type="primary"
+            style="margin: 0 0 20px 20px;float:right"
+            size="mini"
+            icon="el-icon-circle-plus-outline"
+            @click="onAdd"
+          >添加用户</el-button>
+        </el-form>
       </el-row>
     </div>
     <div class="content-box">
@@ -78,15 +88,18 @@
       </span>
     </el-dialog>
     <div class="pagination-container">
-      <el-pagination
-        background
-        :current-page.sync="pager.page"
-        :page-size="pager.pageSize"
-        layout="total, prev, pager, next"
-        :total="total"
-        @size-change="renderList"
-        @current-change="renderList"
-      />
+      <div class="pagination-container">
+        <el-pagination
+          background
+          :current-page.sync="pager.page"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="pager.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="renderList"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -103,6 +116,9 @@ export default {
       editForm: {
 
       },
+      queryForm: {
+        keyword: ''
+      },
       pager: { page: 1, pageSize: 10 },
       total: 0
     }
@@ -111,9 +127,17 @@ export default {
     this.renderList()
   },
   methods: {
+    handleSizeChange(size) {
+      this.pager.pageSize = size
+      this.renderList()
+    },
+    resetQuery() {
+      this.queryForm = {}
+      this.renderList()
+    },
     renderList() {
       this.listLoading = true
-      queryUser(this.pager).then(resp => {
+      queryUser(Object.assign(this.pager, this.queryForm)).then(resp => {
         this.users = resp.data.items
         this.total = resp.data.total
         this.listLoading = false

@@ -9,7 +9,7 @@ export function editUser(user) {
 }
 
 export function queryUser(query) {
-  return request.get('users', query)
+  return request.get('users', { params: query })
 }
 
 export function getInfo(token) {

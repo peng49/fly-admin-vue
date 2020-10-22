@@ -46,7 +46,7 @@
           <el-input v-model="editForm.name" style="width: 90%" />
         </el-form-item>
         <el-form-item label="排序">
-          <el-input v-model="editForm.sort" style="width: 90%" />
+          <el-input-number v-model="editForm.sort" :min="0" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -80,7 +80,7 @@ export default {
       editForm: {
 
       },
-      pager: { page: 1, pageSize: 15 },
+      pager: { page: 1, pageSize: 10 },
       total: 0
     }
   },
