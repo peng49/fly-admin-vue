@@ -56,7 +56,7 @@ export const constantRoutes = [
   {
     path: '/users',
     component: Layout,
-    meta: { title: '用户管理' },
+    meta: { title: '用户管理', icon: 'users' },
     children: [
       {
         path: '',
@@ -81,7 +81,7 @@ export const constantRoutes = [
   {
     path: '/posts',
     component: Layout,
-    meta: { title: '文章管理' },
+    meta: { title: '文章管理', icon: '<svg-icon icon-class="list" />' },
     children: [
       {
         path: 'column',
@@ -106,19 +106,19 @@ export const constantRoutes = [
   {
     path: '/system',
     component: Layout,
-    meta: { title: '系统管理', icon: 'dashboard' },
+    meta: { title: '系统管理', icon: 'settings' },
     alwaysShow: true,
     children: [
       {
         path: 'settings',
         name: 'Setting',
         component: () => import('@/views/system/settings'),
-        meta: { title: '通用设置' }
+        meta: { title: '通用设置', icon: 'setting' }
       }, {
         path: 'friend-link',
         name: 'system.friend-link',
         component: () => import('@/views/system/friendLink'),
-        meta: { title: '友链管理' }
+        meta: { title: '友链管理', icon: 'list' }
       }
     ]
   },
