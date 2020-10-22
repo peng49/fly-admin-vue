@@ -4,11 +4,30 @@
       <el-row class="right-row">
         <el-button
           type="primary"
-          style="margin: 0 0 20px 20px"
+          style="margin: 0 0 20px 0px"
+          size="mini"
+          icon="el-icon-circle-plus-outline"
+          @click="handleFilter"
+        >筛选</el-button>
+        <el-button
+          plain
+          type="success"
+          style="float:right"
           size="mini"
           icon="el-icon-circle-plus-outline"
           @click="onAdd"
-        >添加文章</el-button>
+        >新增文章</el-button>
+      </el-row>
+      <el-row v-if="filter">
+        <el-form :inline="true" size="mini">
+          <el-form-item>
+            <el-input v-model="queryForm.keyword" placeholder="请输入查询标题" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-search" plain @click="onSearch">查询</el-button>
+            <el-button @click="onSearch">重置</el-button>
+          </el-form-item>
+        </el-form>
       </el-row>
     </div>
     <div class="content-box">
@@ -62,10 +81,11 @@
       <el-pagination
         background
         :current-page.sync="pager.page"
+        :page-sizes="[10, 20, 50, 100]"
         :page-size="pager.pageSize"
-        layout="total, prev, pager, next"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="total"
-        @size-change="renderList"
+        @size-change="handleSizeChange"
         @current-change="renderList"
       />
     </div>
@@ -78,12 +98,17 @@ export default {
   name: 'PostManager',
   data() {
     return {
+      filter: false,
       listLoading: true,
       posts: [],
       edit: false,
       editForm: {
 
       },
+      queryForm: {
+        keyword: ''
+      },
+      selectedRows: [],
       pager: { page: 1, pageSize: 10 },
       total: 0
     }
@@ -92,6 +117,13 @@ export default {
     this.renderList()
   },
   methods: {
+    handleFilter() {
+      if (this.filter) {
+        this.filter = false
+      } else {
+        this.filter = true
+      }
+    },
     renderList() {
       this.listLoading = true
       queryPosts(this.pager).then(resp => {
@@ -99,6 +131,10 @@ export default {
         this.total = resp.data.total
         this.listLoading = false
       })
+    },
+    handleSizeChange(pageSize) {
+      this.pager.pageSize = pageSize
+      this.renderList()
     },
     onAdd() {
       this.editForm = {}
@@ -114,6 +150,9 @@ export default {
     onSubmit() {
 
     },
+    onSearch() {
+
+    },
     onDelete(column) {
       this.$confirm('确认删除？', {
         closeOnPressEscape: false,
@@ -126,6 +165,7 @@ export default {
     },
     handleSelectionChange(rows) {
       console.log(rows)
+      this.selectedRows = rows
     }
   }
 }

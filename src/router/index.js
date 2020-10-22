@@ -93,7 +93,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Themes',
         component: () => import('@/views/theme/index'),
-        meta: { title: '主题管理'}
+        meta: { title: '主题管理' }
       },
       {
         path: 'comments',
@@ -137,7 +137,7 @@ export const constantRoutes = [
         path: 'users',
         name: 'Users',
         component: () => import('@/views/auth/user/index'),
-        meta: { title: '用户管理'}
+        meta: { title: '用户管理' }
       },
       {
         path: 'roles',

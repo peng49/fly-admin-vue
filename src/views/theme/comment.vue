@@ -7,10 +7,12 @@
         element-loading-text="Loading"
         border
       >
-        <el-table-column prop="id" label="ID" />
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column prop="post.title" label="文章标题" />
+        <el-table-column prop="post.publishAt" label="发布时间" />
         <el-table-column prop="commentTime" label="评论时间" />
         <el-table-column label="评论内容">
-          <template slot-scope="{ row}">
+          <template slot-scope="{ row }">
             <div v-html="row.content" />
           </template>
         </el-table-column>
@@ -30,6 +32,7 @@
       <el-pagination
         background
         :current-page.sync="pager.page"
+        :page-sizes="[10, 20, 50, 100]"
         :page-size="pager.pageSize"
         layout="total, prev, pager, next"
         :total="total"
