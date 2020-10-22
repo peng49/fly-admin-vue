@@ -56,13 +56,13 @@ export const constantRoutes = [
   {
     path: '/users',
     component: Layout,
-    meta: { title: '用户管理', icon: 'users' },
+    meta: { title: '用户管理', icon: 'peoples' },
     children: [
       {
         path: '',
         name: 'Users',
         component: () => import('@/views/user/index'),
-        meta: { title: '用户管理', icon: 'theme' }
+        meta: { title: '用户管理' }
       },
       {
         path: 'view/:id',
@@ -74,82 +74,82 @@ export const constantRoutes = [
         path: 'oauth',
         name: 'Oauth',
         component: () => import('@/views/user/oauth'),
-        meta: { title: '第三方账户管理', icon: 'theme' }
+        meta: { title: '第三方账户管理' }
       }
     ]
   },
   {
     path: '/posts',
     component: Layout,
-    meta: { title: '文章管理', icon: '<svg-icon icon-class="list" />' },
+    meta: { title: '文章管理', icon: 'education' },
     children: [
       {
         path: 'column',
         name: 'Column',
         component: () => import('@/views/theme/column'),
-        meta: { title: '栏目管理', icon: 'theme' }
+        meta: { title: '栏目管理' }
       },
       {
         path: 'index',
         name: 'Themes',
         component: () => import('@/views/theme/index'),
-        meta: { title: '主题管理', icon: 'theme' }
+        meta: { title: '主题管理'}
       },
       {
         path: 'comments',
         name: 'Comment',
         component: () => import('@/views/theme/comment'),
-        meta: { title: '评论管理', icon: 'theme' }
+        meta: { title: '评论管理' }
       }
     ]
   },
   {
     path: '/system',
     component: Layout,
-    meta: { title: '系统管理', icon: 'setting' },
+    meta: { title: '系统管理', icon: 'el-icon-s-tools' },
     alwaysShow: true,
     children: [
       {
         path: 'settings',
         name: 'Setting',
         component: () => import('@/views/system/settings'),
-        meta: { title: '通用设置', icon: 'empty' }
+        meta: { title: '通用设置' }
       }, {
         path: 'friend-link',
         name: 'system.friend-link',
         component: () => import('@/views/system/friendLink'),
-        meta: { title: '友链管理', icon: 'list' }
+        meta: { title: '友链管理' }
       }
     ]
   },
   {
     path: '/admin/auth',
     component: Layout,
-    meta: { title: '后台管理', icon: 'el-icon-s-help' },
+    meta: { title: '后台管理', icon: 'tree' },
     children: [
       {
         path: 'menus',
         name: 'Menus',
         component: () => import('@/views/auth/menu/index'),
-        meta: { title: '菜单管理', icon: 'list' }
+        meta: { title: '菜单管理' }
       },
       {
         path: 'users',
         name: 'Users',
         component: () => import('@/views/auth/user/index'),
-        meta: { title: '用户管理', icon: 'list' }
+        meta: { title: '用户管理'}
       },
       {
         path: 'roles',
         name: 'Roles',
         component: () => import('@/views/auth/role/index'),
-        meta: { title: '角色管理', icon: 'list' }
+        meta: { title: '角色管理' }
       },
       {
         path: 'permissions',
         name: 'Permissions',
         component: () => import('@/views/auth/permission/index'),
-        meta: { title: '权限管理', icon: 'list' }
+        meta: { title: '权限管理' }
       }
     ]
   }
