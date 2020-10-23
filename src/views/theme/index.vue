@@ -6,9 +6,8 @@
           type="primary"
           style="margin: 0 0 20px 0px"
           size="mini"
-          icon="el-icon-circle-plus-outline"
           @click="handleFilter"
-        >筛选</el-button>
+        ><svg-icon icon-class="filter" /> 筛选</el-button>
         <router-link :to="{name:'post.create'}">
           <el-button
             plain
