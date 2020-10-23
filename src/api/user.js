@@ -4,6 +4,10 @@ export function addUser(body) {
   return request.post('users', body)
 }
 
+export function getUser(id) {
+  return request.get('users/' + id)
+}
+
 export function editUser(user) {
   return request.put('users/' + user.id, user)
 }

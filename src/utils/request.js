@@ -71,7 +71,7 @@ service.interceptors.response.use(
       Message({
         message: res.message || 'success',
         type: 'success',
-        duration: 5 * 1000
+        duration: 1.5 * 1000
       })
       return res
     }

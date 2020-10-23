@@ -4,10 +4,10 @@
 
       <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
         <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
-          Publish
+          发布
         </el-button>
         <el-button v-loading="loading" type="warning" @click="draftForm">
-          Draft
+          保存到草稿
         </el-button>
       </sticky>
 
@@ -73,11 +73,13 @@
 import Sticky from '@/components/Sticky' // 粘性header组件
 import Tinymce from '@/components/Tinymce'
 import MDinput from '@/components/MDinput'
-import { addPost } from '@/api/post'
-import { queryUser } from '@/api/user'
-import { queryColumn } from '@/api/column'
+import { addPost, getPost, updatePost } from '@/api/post'
+import { queryUser, getUser } from '@/api/user'
+import { queryColumn, getColumn } from '@/api/column'
 
 const defaultForm = {
+  authorId: 0,
+  columnId: 0,
   status: 'draft',
   title: '', // 文章题目
   content: '', // 文章内容
@@ -109,10 +111,6 @@ export default {
       return this.postForm.content_short.length
     },
     displayTime: {
-      // set and get is useful when the data
-      // returned by the back end api is different from the front end
-      // back end return => "2013-06-25 06:59:25"
-      // front end need timestamp => 1372114765000
       get() {
         return (+new Date(this.postForm.display_time))
       },
@@ -126,13 +124,30 @@ export default {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)
     }
-    // Why need to make a copy of this.$route here?
-    // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
-    // https://github.com/PanJiaChen/vue-element-admin/issues/1221
-    this.tempRoute = Object.assign({}, this.$route)
+    // this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {
     fetchData(id) {
+      getPost(id).then(resp => {
+        const post = resp.data
+        this.postForm.id = post.id
+        this.postForm.title = post.title
+        this.postForm.content = post.content
+
+        if (post.author.id) {
+          getUser(post.author.id).then(resp => {
+            this.users = [resp.data]
+            this.postForm.authorId = post.author.id
+          })
+        }
+
+        if (post.column.id) {
+          getColumn(post.column.id).then(resp => {
+            this.columns = [resp.data]
+            this.postForm.columnId = post.column.id
+          })
+        }
+      })
     },
     setTagsViewTitle() {
       const title = 'Edit Article'
@@ -149,14 +164,22 @@ export default {
         if (valid) {
           this.loading = true
           this.postForm.status = 1
-          addPost(this.postForm).then(resp => {
-            this.loading = false
+
+          let res
+          if (this.isEdit) {
+            res = updatePost(this.postForm)
+          } else {
+            res = addPost(this.postForm)
+          }
+          res.then(resp => {
             this.$notify({
               title: '成功',
-              message: '发布文章成功',
+              message: '操作',
               type: 'success',
               duration: 2000
             })
+          }).finally(res => {
+            this.loading = false
           })
         } else {
           console.log('error submit!!')
@@ -178,7 +201,7 @@ export default {
         showClose: true,
         duration: 1000
       })
-      this.postForm.status = 'draft'
+      this.postForm.status = 0
     },
     getRemoteUserList(keyword) {
       console.log(keyword)

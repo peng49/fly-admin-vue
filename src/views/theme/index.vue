@@ -9,7 +9,7 @@
           icon="el-icon-circle-plus-outline"
           @click="handleFilter"
         >筛选</el-button>
-        <router-link :to="{name:'post.edit'}">
+        <router-link :to="{name:'post.create'}">
           <el-button
             plain
             type="success"
@@ -62,7 +62,11 @@
         <el-table-column prop="publishAt" label="发布时间" />
         <el-table-column label="操作">
           <template slot-scope="{ row }">
-            <el-button size="mini" @click="onEdit(row)">编辑</el-button>
+            <router-link
+              :to="{name:'post.edit',params:{'id':row.id}}"
+            >
+              <el-button size="mini">编辑</el-button>
+            </router-link>
             <!-- <el-button
               size="mini"
               type="danger"
