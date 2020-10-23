@@ -24,6 +24,18 @@
           <el-form-item>
             <el-input v-model="queryForm.keyword" placeholder="请输入查询标题" />
           </el-form-item>
+          <el-form-item label-width="90px" label="栏目:" class="postInfo-container-item">
+            <el-select
+              v-model="queryForm.columnId"
+              :remote-method="getColumns"
+              filterable
+              default-first-option
+              remote
+              placeholder="Search Column"
+            >
+              <el-option v-for="column in columns" :key="column.id" :label="column.name" :value="column.id" />
+            </el-select>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" plain @click="renderList">查询</el-button>
             <el-button @click="resetQuery">重置</el-button>
@@ -94,6 +106,7 @@
 </template>
 <script>
 import { queryPosts } from '@/api/post'
+import { queryColumn } from '@/api/column'
 
 export default {
   name: 'PostManager',
@@ -106,6 +119,7 @@ export default {
       editForm: {
 
       },
+      columns: [],
       queryForm: {
         keyword: ''
       },
@@ -169,6 +183,11 @@ export default {
     handleSelectionChange(rows) {
       console.log(rows)
       this.selectedRows = rows
+    },
+    getColumns(keyword) {
+      queryColumn({ pageSize: 15, keyword: keyword }).then(resp => {
+        this.columns = resp.data.items
+      })
     }
   }
 }
