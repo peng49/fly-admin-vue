@@ -8,6 +8,10 @@ export function editUser(user) {
   return request.put('users/' + user.id, user)
 }
 
+export function getUser(id) {
+  return request.get('users/' + id)
+}
+
 export function queryUser(query) {
   return request.get('users', { params: query })
 }

@@ -3,11 +3,22 @@
     <el-row :gutter="20">
       <el-col :span="6">
         <el-card class="box-card">
-          <div v-for="o in 4" :key="o" class="text item">
-            {{ '列表内容 ' + o }}
+          <div class="avatar">
+            <img :src="user.avatar" :alt="user.username">
+            {{ user.username }}
+          </div>
+          <div class="text item">
+            注册时间：<span>{{ user.createdAt }}</span>
+          </div>
+          <div class="text item">
+            文章数量: 0
+          </div>
+          <div class="text item">
+            评论数量: 0
           </div>
         </el-card>
-        <el-card class="box-card">
+
+        <el-card class="box-card" style="margin-top: 15px;">
           <div slot="header" class="clearfix">
             <span>卡片名称</span>
             <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
@@ -30,15 +41,26 @@
 
 </template>
 <script>
+import { getUser } from '@/api/user'
+
 export default {
   data() {
     return {
+      user: {},
       activeName: 'second'
     }
+  },
+  created() {
+    this.renderContent(this.$route.params.id)
   },
   methods: {
     handleClick(tab, event) {
       console.log(tab, event)
+    },
+    renderContent(id) {
+      getUser(id).then(resp => {
+        this.user = resp.data
+      })
     }
   }
 }
