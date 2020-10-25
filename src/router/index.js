@@ -50,7 +50,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard' }
     }]
   },
   {
@@ -96,7 +96,13 @@ export const constantRoutes = [
         meta: { title: '主题管理' }
       },
       {
-        path: 'edit',
+        path: 'create',
+        name: 'post.create',
+        component: () => import('@/views/theme/create'),
+        hidden: true
+      },
+      {
+        path: 'edit/:id',
         name: 'post.edit',
         component: () => import('@/views/theme/edit'),
         hidden: true

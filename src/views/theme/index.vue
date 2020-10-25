@@ -6,10 +6,9 @@
           type="primary"
           style="margin: 0 0 20px 0px"
           size="mini"
-          icon="el-icon-circle-plus-outline"
           @click="handleFilter"
-        >筛选</el-button>
-        <router-link :to="{name:'post.edit'}">
+        ><svg-icon icon-class="filter" /> 筛选</el-button>
+        <router-link :to="{name:'post.create'}">
           <el-button
             plain
             type="success"
@@ -23,6 +22,18 @@
         <el-form :inline="true" size="mini">
           <el-form-item>
             <el-input v-model="queryForm.keyword" placeholder="请输入查询标题" />
+          </el-form-item>
+          <el-form-item label-width="90px" label="栏目:" class="postInfo-container-item">
+            <el-select
+              v-model="queryForm.columnId"
+              :remote-method="getColumns"
+              filterable
+              default-first-option
+              remote
+              placeholder="Search Column"
+            >
+              <el-option v-for="column in columns" :key="column.id" :label="column.name" :value="column.id" />
+            </el-select>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" plain @click="renderList">查询</el-button>
@@ -50,7 +61,11 @@
         <el-table-column prop="publishAt" label="发布时间" />
         <el-table-column label="操作">
           <template slot-scope="{ row }">
-            <el-button size="mini" @click="onEdit(row)">编辑</el-button>
+            <router-link
+              :to="{name:'post.edit',params:{'id':row.id}}"
+            >
+              <el-button size="mini">编辑</el-button>
+            </router-link>
             <!-- <el-button
               size="mini"
               type="danger"
@@ -94,6 +109,7 @@
 </template>
 <script>
 import { queryPosts } from '@/api/post'
+import { queryColumn } from '@/api/column'
 
 export default {
   name: 'PostManager',
@@ -106,6 +122,7 @@ export default {
       editForm: {
 
       },
+      columns: [],
       queryForm: {
         keyword: ''
       },
@@ -169,6 +186,11 @@ export default {
     handleSelectionChange(rows) {
       console.log(rows)
       this.selectedRows = rows
+    },
+    getColumns(keyword) {
+      queryColumn({ pageSize: 15, keyword: keyword }).then(resp => {
+        this.columns = resp.data.items
+      })
     }
   }
 }

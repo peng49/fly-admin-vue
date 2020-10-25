@@ -4,7 +4,7 @@
       <el-row class="right-row">
         <el-form :inline="true" size="mini">
           <el-form-item>
-            <el-input v-model="queryForm.keyword" placeholder="请输入查询标题" />
+            <el-input v-model="queryForm.keyword" placeholder="请输入栏目名查询" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" plain @click="renderList">查询</el-button>
@@ -107,7 +107,7 @@ export default {
     },
     renderList() {
       this.listLoading = true
-      queryColumn(Object.assign(this.pager, this.queryForm)).then(resp => {
+      queryColumn(Object.assign({}, this.pager, this.queryForm)).then(resp => {
         this.columns = resp.data.items
         this.total = resp.data.total
         this.listLoading = false
