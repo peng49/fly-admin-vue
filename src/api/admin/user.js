@@ -4,7 +4,7 @@ export function login(params) {
   const form = new FormData()
   form.append('username', params.username)
   form.append('password', params.password)
-  return request.post('auth/users/login', form)
+  return request.post('http://localhost:8080/login', form)
 }
 
 export function getUsers() {
