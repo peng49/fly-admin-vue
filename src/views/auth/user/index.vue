@@ -22,7 +22,7 @@
       >
         <el-table-column prop="id" label="ID" />
         <el-table-column prop="username" label="用户名" />
-        <el-table-column prop="avatar" label="图像" />
+        <el-table-column prop="avatar" label="头像" />
         <el-table-column prop="createdAt" label="创建时间" />
         <el-table-column prop="updatedAt" label="更新时间" />
         <el-table-column label="操作">
@@ -45,24 +45,35 @@
         <el-form-item label="名称">
           <el-input v-model="editForm.name" style="width: 90%" />
         </el-form-item>
-        <el-form-item label="密码">
-          <el-input
-            v-model="editForm.password"
-            type="password"
-            style="width: 90%"
-          />
-        </el-form-item>
-        <el-form-item label="确认密码">
-          <el-input v-model="editForm.confirmPassword" style="width: 90%" />
-        </el-form-item>
         <el-form-item label="角色">
           <el-select v-model="editForm.roleIds" multiple style="width: 90%">
             <el-option v-for="role in roles" :key="role.id" :label="role.name" :value="role.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="权限">
-          <el-input v-model="editForm.confirmPassword" style="width: 90%" />
+          <el-tree
+            :data="permissionTree"
+            show-checkbox
+            :props="{label:'name',key:'id'}"
+          />
         </el-form-item>
+
+        <el-form-item v-if="editForm.id > 0">
+          <el-checkbox v-model="updatePassword"><strong>更新密码</strong></el-checkbox>
+        </el-form-item>
+
+        <div v-if="editForm.id == 0 || updatePassword">
+          <el-form-item label="密码">
+            <el-input
+              v-model="editForm.password"
+              type="password"
+              style="width: 90%"
+            />
+          </el-form-item>
+          <el-form-item label="确认密码">
+            <el-input v-model="editForm.confirmPassword" style="width: 90%" />
+          </el-form-item>
+        </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="onCancel">取 消</el-button>
@@ -74,6 +85,8 @@
 
 <script>
 import { getUsers, addUser, editUser, deleteUser } from '@/api/admin/user'
+import { getPermissions } from '@/api/admin/permission'
+import { buildTree } from '@/utils/tree'
 import { getRoles } from '@/api/admin/role'
 
 export default {
@@ -84,14 +97,22 @@ export default {
       users: [],
       roles: [],
       edit: false,
-      editForm: {}
+      updatePassword: false,
+      editForm: {},
+      permissionTree: []
     }
   },
   created() {
     this.renderList()
     this.getRoles()
+    this.initPermissions()
   },
   methods: {
+    initPermissions() {
+      getPermissions().then(resp => {
+        this.permissionTree = buildTree(resp.data)
+      })
+    },
     renderList() {
       getUsers().then((resp) => {
         this.users = resp.data
@@ -105,10 +126,11 @@ export default {
     },
     onAdd() {
       this.edit = true
-      this.editForm = {}
+      this.editForm = { id: 0 }
     },
     onEdit(user) {
       this.edit = true
+      this.updatePassword = false
       this.editForm = user
     },
     onDelete(row) {

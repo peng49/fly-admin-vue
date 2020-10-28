@@ -14,7 +14,8 @@
     <div class="content-box">
       <el-table
         v-loading="listLoading"
-        :data="permissions"
+        :data="permissionsTree"
+        row-key="id"
         element-loading-text="Loading"
         border
         fit
@@ -43,6 +44,14 @@
       :title="editForm.id > 0 ? '编辑权限' : '添加权限'"
     >
       <el-form size="small" label-width="120px" class="demo-form-inline">
+        <el-form-item label="上级权限">
+          <el-cascader
+            v-model="editForm.parentId"
+            :options="permissionsTree"
+            :props="{ label: 'name', value: 'id' }"
+            change-on-select
+          />
+        </el-form-item>
         <el-form-item label="名称">
           <el-input v-model="editForm.name" style="width: 90%" />
         </el-form-item>
@@ -71,6 +80,7 @@ import {
   editPermission,
   deletePermission
 } from '@/api/admin/permission'
+import { buildTree } from '@/utils/tree'
 
 export default {
   name: 'AdminUserManager',
@@ -78,6 +88,7 @@ export default {
     return {
       listLoading: true,
       permissions: [],
+      permissionsTree: [],
       edit: false,
       editForm: {}
     }
@@ -90,6 +101,8 @@ export default {
       console.log('getPermissions')
       getPermissions().then((resp) => {
         this.permissions = resp.data
+        this.permissionsTree = buildTree(this.permissions)
+        console.log(this.permissionsTree)
         this.listLoading = false
       })
     },
@@ -115,7 +128,15 @@ export default {
       this.edit = false
     },
     onSubmit() {
-      console.log(this.editForm)
+      if (this.editForm.parentId.length > 0) {
+        this.editForm.parentId = this.editForm.parentId[
+          this.editForm.parentId.length - 1
+        ]
+      } else {
+        if (this.editForm.parentId === undefined) {
+          this.editForm.parentId = 0
+        }
+      }
       let res
       if (this.editForm.id > 0) {
         res = editPermission(this.editForm)

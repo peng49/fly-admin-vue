@@ -84,7 +84,8 @@
 
 <script>
 import request from '@/utils/request'
-import { addMenu, deleteMenu, editMenu } from '@/api/admin/menu'
+import { buildTree } from '@/utils/tree'
+import { addMenu, deleteMenu, editMenu, getAllMenu } from '@/api/admin/menu'
 
 export default {
   name: 'AdminMenuManager',
@@ -111,52 +112,14 @@ export default {
     this.getMenus()
   },
   methods: {
-    hasChild(parent) {
-      for (const i in this.menus) {
-        const menu = this.menus[i]
-        if (menu.parentId === parent.id) {
-          return true
-        }
-      }
-      return false
-    },
-    getChildren(parent) {
-      const items = []
-      for (const i in this.menus) {
-        const menu = this.menus[i]
-        if (menu.parentId === parent.id) {
-          if (this.hasChild(menu)) {
-            menu.children = this.getChildren(menu)
-          }
-          items.push(menu)
-        }
-      }
-      return items
-    },
-    initTree() {
-      for (const i in this.menus) {
-        const menu = this.menus[i]
-        if (menu.parentId !== 0) {
-          continue
-        }
-
-        if (this.hasChild(menu)) {
-          menu.children = this.getChildren(menu)
-        }
-        this.menuTree.push(menu)
-      }
-      this.listLoading = false
-    },
     getMenus() {
       const _this = this
       _this.menus = []
       _this.menuTree = []
-      request({
-        url: 'http://localhost:8080/api/auth/menus',
-        method: 'get'
-      }).then(function(resp) {
+      getAllMenu().then(function(resp) {
         _this.menus = resp.data
-        _this.initTree()
+        _this.menuTree = buildTree(_this.menus)
+        _this.listLoading = false
       })
     },
     openForm() {
