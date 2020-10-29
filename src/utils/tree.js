@@ -24,7 +24,7 @@ export function buildTree(items) {
     }
     return children
   }
-  console.log(items)
+
   for (const i in items) {
     const item = items[i]
     if (item.parentId !== 0) {

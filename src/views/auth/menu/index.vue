@@ -83,7 +83,6 @@
 </template>
 
 <script>
-import request from '@/utils/request'
 import { buildTree } from '@/utils/tree'
 import { addMenu, deleteMenu, editMenu, getAllMenu } from '@/api/admin/menu'
 

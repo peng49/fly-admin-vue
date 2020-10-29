@@ -37,7 +37,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog :visible.sync="edit" :close-on-click-modal="false" :title="editForm.id > 0?'编辑用户':'添加用户'">
+    <el-dialog :visible="edit" :close-on-click-modal="false" :title="editForm.id > 0?'编辑用户':'添加用户'">
       <el-form size="small" label-width="80px" class="demo-form-inline">
         <el-form-item label="用户名">
           <el-input v-model="editForm.username" style="width: 90%" />
@@ -52,9 +52,12 @@
         </el-form-item>
         <el-form-item label="权限">
           <el-tree
+            ref="tree"
             :data="permissionTree"
             show-checkbox
             :props="{label:'name',key:'id'}"
+            node-key="id"
+            @check-change="handleCheckChange"
           />
         </el-form-item>
 
@@ -71,7 +74,7 @@
             />
           </el-form-item>
           <el-form-item label="确认密码">
-            <el-input v-model="editForm.confirmPassword" style="width: 90%" />
+            <el-input v-model="editForm.confirmPassword" type="password" style="width: 90%" />
           </el-form-item>
         </div>
       </el-form>
@@ -106,6 +109,7 @@ export default {
     this.renderList()
     this.getRoles()
     this.initPermissions()
+    console.log(this.$refs.tree)
   },
   methods: {
     initPermissions() {
@@ -119,6 +123,9 @@ export default {
         this.listLoading = false
       })
     },
+    handleCheckChange(permission, checked, node) {
+      this.editForm.permissionIds = this.$refs.tree.getCheckedKeys()
+    },
     getRoles() {
       getRoles().then(resp => {
         this.roles = resp.data
@@ -127,11 +134,22 @@ export default {
     onAdd() {
       this.edit = true
       this.editForm = { id: 0 }
+
+      if (this.$refs.tree) {
+        this.$refs.tree.setCheckedKeys([])
+      }
     },
     onEdit(user) {
+      console.log(this.users)
       this.edit = true
       this.updatePassword = false
-      this.editForm = user
+
+      this.$nextTick(() => {
+        if (this.$refs.tree) {
+          this.$refs.tree.setCheckedKeys(user.permissionIds)
+        }
+      })
+      this.editForm = Object.assign({}, user)
     },
     onDelete(row) {
       this.$confirm('确认删除？', {
