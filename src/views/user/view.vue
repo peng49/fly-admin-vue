@@ -11,10 +11,10 @@
             注册时间：<span>{{ user.createdAt }}</span>
           </div>
           <div class="text item">
-            文章数量: 0
+            文章数量: {{ user.postCount }}
           </div>
           <div class="text item">
-            评论数量: 0
+            评论数量: {{ user.commentCount }}
           </div>
         </el-card>
 
