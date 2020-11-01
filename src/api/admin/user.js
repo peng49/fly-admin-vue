@@ -5,8 +5,8 @@ export function login(params) {
   form.append('username', params.username)
   form.append('password', params.password)
 
-  const baseUrl = process.env.VUE_APP_BASE_API
-  return request.post(baseUrl.replace(/api\/?$/, '') + 'login', form)
+  // const url = process.env.VUE_APP_BASE_API.replace(/api\/?$/, '') + 'login'
+  return request.post('login', form)
 }
 
 export function getUsers() {
