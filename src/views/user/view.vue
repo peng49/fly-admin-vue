@@ -3,9 +3,9 @@
     <el-row :gutter="20">
       <el-col :span="6">
         <el-card class="box-card">
-          <div class="avatar">
-            <img :src="user.avatar" :alt="user.username">
-            {{ user.username }}
+          <div class="text item" style="text-align: center;">
+            <img :src="user.avatar" :alt="user.username" style="height:100px;width:100px;border-radius: 50px;">
+            <p><strong>{{ user.username }}</strong></p>
           </div>
           <div class="text item">
             注册时间：<span>{{ user.createdAt }}</span>
