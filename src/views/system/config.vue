@@ -55,7 +55,7 @@
     >
       <el-form size="small" label-width="120px" class="demo-form-inline">
         <el-form-item label="属性名">
-          <el-input v-model="editForm.attribute" readonly="true" style="width: 90%" />
+          <el-input v-model="editForm.attribute" style="width: 90%" :disabled="editForm.id > 0" />
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="editForm.remark" type="textarea" :rows="5" />
