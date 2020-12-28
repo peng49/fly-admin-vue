@@ -61,10 +61,11 @@
       <el-pagination
         background
         :current-page.sync="pager.page"
+        :page-sizes="[10, 20, 50, 100]"
         :page-size="pager.pageSize"
-        layout="total, prev, pager, next"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="total"
-        @size-change="renderList"
+        @size-change="handleSizeChange"
         @current-change="renderList"
       />
     </div>
@@ -90,11 +91,15 @@ export default {
     this.renderList()
   },
   methods: {
+    handleSizeChange(size) {
+      this.pager.pageSize = size
+      this.renderList()
+    },
     renderList() {
       this.listLoading = true
       queryLinks(this.pager).then(resp => {
         this.links = resp.data.items
-        this.total = resp.data.total
+        this.total = Number(resp.data.total)
         this.listLoading = false
       })
     },

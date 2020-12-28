@@ -127,6 +127,11 @@ export const constantRoutes = [
         component: () => import('@/views/system/settings'),
         meta: { title: '通用设置' }
       }, {
+        path: 'system-config',
+        name: 'system.system-config',
+        component: () => import('@/views/system/config'),
+        meta: { title: '系统设置' }
+      }, {
         path: 'friend-link',
         name: 'system.friend-link',
         component: () => import('@/views/system/friendLink'),

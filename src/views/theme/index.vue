@@ -151,7 +151,7 @@ export default {
       const queryBody = Object.assign({}, this.pager, this.queryForm)
       queryPosts(queryBody).then(resp => {
         this.posts = resp.data.items
-        this.total = resp.data.total
+        this.total = Number(resp.data.total)
         this.listLoading = false
       })
     },

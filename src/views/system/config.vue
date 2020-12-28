@@ -4,7 +4,7 @@
       <el-row class="right-row">
         <el-form :inline="true" size="mini">
           <el-form-item>
-            <el-input v-model="queryForm.keyword" placeholder="请输入查询标题" />
+            <el-input v-model="queryForm.keyword" placeholder="请输入关键字查询" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" plain @click="renderList">查询</el-button>
@@ -17,39 +17,25 @@
             size="mini"
             icon="el-icon-circle-plus-outline"
             @click="onAdd"
-          >添加用户</el-button>
+          >添加配置</el-button>
         </el-form>
       </el-row>
     </div>
     <div class="content-box">
       <el-table
         v-loading="listLoading"
-        :data="users"
+        :data="configList"
         element-loading-text="Loading"
         border
         fit
         highlight-current-row
       >
-        <el-table-column label="用户名">
-          <template slot-scope="{ row }">
-            <router-link
-              :to="{name:'user.view',params:{'id':row.id}}"
-              class="link"
-              v-text="row.username"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column prop="name" label="名称" />
-        <el-table-column prop="email" label="邮箱" />
-        <el-table-column prop="signature" label="签名" />
-        <el-table-column prop="city" label="城市" />
-        <el-table-column prop="createdAt" label="注册时间" />
-        <el-table-column prop="isAdmin" label="是否是管理员" align="center">
-          <template slot-scope="{ row }">
-            <el-tag v-if="row.isAdmin == 1">是</el-tag>
-            <el-tag v-else type="info">否</el-tag>
-          </template>
-        </el-table-column>
+        <el-table-column prop="id" label="ID" width="80" align="center" />
+        <el-table-column prop="attribute" label="属性名" />
+        <el-table-column prop="remark" label="备注" />
+        <el-table-column prop="value" label="属性值" align="center" />
+        <el-table-column prop="createdAt" label="创建时间" />
+        <el-table-column prop="updatedAt" label="更新时间" />
         <el-table-column label="操作">
           <template slot-scope="{ row }">
             <el-button size="mini" @click="onEdit(row)">编辑</el-button>
@@ -65,20 +51,17 @@
     <el-dialog
       :visible.sync="edit"
       :close-on-click-modal="false"
-      :title="editForm.id > 0 ? '编辑用户' : '添加用户'"
+      :title="editForm.id > 0 ? '编辑栏目' : '添加栏目'"
     >
       <el-form size="small" label-width="120px" class="demo-form-inline">
-        <el-form-item label="用户名">
-          <el-input v-model="editForm.username" style="width: 90%" />
+        <el-form-item label="属性名">
+          <el-input v-model="editForm.attribute" readonly="true" style="width: 90%" />
         </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="editForm.email" style="width: 90%" />
+        <el-form-item label="备注">
+          <el-input v-model="editForm.remark" type="textarea" :rows="5" />
         </el-form-item>
-        <el-form-item label="名称">
-          <el-input v-model="editForm.name" style="width: 90%" />
-        </el-form-item>
-        <el-form-item label="密码">
-          <el-input v-model="editForm.password" style="width: 90%" />
+        <el-form-item label="属性值">
+          <el-input v-model="editForm.value" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -87,30 +70,28 @@
       </span>
     </el-dialog>
     <div class="pagination-container">
-      <div class="pagination-container">
-        <el-pagination
-          background
-          :current-page.sync="pager.page"
-          :page-sizes="[10, 20, 50, 100]"
-          :page-size="pager.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="renderList"
-        />
-      </div>
+      <el-pagination
+        background
+        :current-page.sync="pager.page"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="pager.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="renderList"
+      />
     </div>
   </div>
 </template>
 <script>
-import { addUser, editUser, queryUser } from '@/api/user'
+import { addSystemConfig, querySystemConfig, editSystemConfig, deleteSystemConfig } from '@/api/systemConfig'
 
 export default {
-  name: 'UserManager',
+  name: 'SystemConfigManager',
   data() {
     return {
       listLoading: true,
-      users: [],
+      configList: [],
       edit: false,
       editForm: {
 
@@ -136,18 +117,18 @@ export default {
     },
     renderList() {
       this.listLoading = true
-      queryUser(Object.assign(this.pager, this.queryForm)).then(resp => {
-        this.users = resp.data.items
+      querySystemConfig(Object.assign({}, this.pager, this.queryForm)).then(resp => {
+        this.configList = resp.data.items
         this.total = Number(resp.data.total)
         this.listLoading = false
       })
     },
     onAdd() {
-      this.edit = true
       this.editForm = {}
+      this.edit = true
     },
-    onEdit(user) {
-      this.editForm = user
+    onEdit(column) {
+      this.editForm = column
       this.edit = true
     },
     onCancel() {
@@ -156,9 +137,9 @@ export default {
     onSubmit() {
       let res
       if (this.editForm.id > 0) {
-        res = editUser(this.editForm)
+        res = editSystemConfig(this.editForm)
       } else {
-        res = addUser(this.editForm)
+        res = addSystemConfig(this.editForm)
       }
       res.then(resp => {
         this.edit = false
@@ -166,14 +147,14 @@ export default {
       })
     },
     onDelete(column) {
-      // this.$confirm('确认删除？', {
-      //   closeOnPressEscape: false,
-      //   closeOnClickModal: false
-      // }).then(() => {
-      //   deleteUser(column).then((resp) => {
-      //     this.renderList()
-      //   })
-      // })
+      this.$confirm('确认删除？', {
+        closeOnPressEscape: false,
+        closeOnClickModal: false
+      }).then(() => {
+        deleteSystemConfig(column.id).then((resp) => {
+          this.renderList()
+        })
+      })
     }
   }
 }

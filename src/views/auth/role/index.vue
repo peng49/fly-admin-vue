@@ -63,6 +63,18 @@
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </span>
     </el-dialog>
+    <div class="pagination-container">
+      <el-pagination
+        background
+        :current-page.sync="pager.page"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="pager.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="renderRoles"
+      />
+    </div>
   </div>
 </template>
 
@@ -80,7 +92,9 @@ export default {
       permissions: [],
       permissionIds: [],
       editForm: {
-      }
+      },
+      pager: { page: 1, pageSize: 15 },
+      total: 0
     }
   },
   created() {
@@ -88,9 +102,14 @@ export default {
     this.getPermissions()
   },
   methods: {
+    handleSizeChange(size) {
+      this.pager.pageSize = size
+      this.renderRoles()
+    },
     renderRoles() {
       getRoles().then((resp) => {
         this.roles = resp.data
+        this.total = Number(resp.data.total)
         this.listLoading = false
       })
     },

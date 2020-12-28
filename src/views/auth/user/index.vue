@@ -83,6 +83,18 @@
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </span>
     </el-dialog>
+    <div class="pagination-container">
+      <el-pagination
+        background
+        :current-page.sync="pager.page"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="pager.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="renderList"
+      />
+    </div>
   </div>
 </template>
 
@@ -102,7 +114,9 @@ export default {
       edit: false,
       updatePassword: false,
       editForm: {},
-      permissionTree: []
+      permissionTree: [],
+      pager: { page: 1, pageSize: 15 },
+      total: 0
     }
   },
   created() {
@@ -112,6 +126,10 @@ export default {
     console.log(this.$refs.tree)
   },
   methods: {
+    handleSizeChange(size) {
+      this.pager.pageSize = size
+      this.renderList()
+    },
     initPermissions() {
       getPermissions().then(resp => {
         this.permissionTree = buildTree(resp.data)
@@ -120,6 +138,7 @@ export default {
     renderList() {
       getUsers().then((resp) => {
         this.users = resp.data
+        this.total = Number(resp.data.total)
         this.listLoading = false
       })
     },

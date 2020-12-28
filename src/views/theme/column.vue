@@ -68,10 +68,11 @@
       <el-pagination
         background
         :current-page.sync="pager.page"
+        :page-sizes="[10, 20, 50, 100]"
         :page-size="pager.pageSize"
-        layout="total, prev, pager, next"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="total"
-        @size-change="renderList"
+        @size-change="handleSizeChange"
         @current-change="renderList"
       />
     </div>
@@ -101,6 +102,10 @@ export default {
     this.renderList()
   },
   methods: {
+    handleSizeChange(size) {
+      this.pager.pageSize = size
+      this.renderList()
+    },
     resetQuery() {
       this.queryForm = {}
       this.renderList()
@@ -109,7 +114,7 @@ export default {
       this.listLoading = true
       queryColumn(Object.assign({}, this.pager, this.queryForm)).then(resp => {
         this.columns = resp.data.items
-        this.total = resp.data.total
+        this.total = Number(resp.data.total)
         this.listLoading = false
       })
     },
