@@ -30,7 +30,6 @@
         fit
         highlight-current-row
       >
-        <el-table-column prop="id" label="ID" width="80px" align="center" />
         <el-table-column label="用户名">
           <template slot-scope="{ row }">
             <router-link
@@ -132,7 +131,7 @@ export default {
       this.renderList()
     },
     resetQuery() {
-      this.queryForm = {}
+      this.queryForm.keyword = ''
       this.renderList()
     },
     renderList() {
