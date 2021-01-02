@@ -5,11 +5,11 @@ export function getRoles() {
 }
 
 export function addRole(params) {
-  return request.post('http://localhost:8080/api/auth/roles', params)
+  return request.post('auth/roles', params)
 }
 
 export function editRole(params) {
-  return request.put('http://localhost:8080/api/auth/roles/' + params.id, params)
+  return request.put('auth/roles/' + params.id, params)
 }
 
 export function deleteRole(params) {
