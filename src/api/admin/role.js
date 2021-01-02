@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 export function getRoles() {
-  return request.get('http://localhost:8080/api/auth/roles')
+  return request.get('auth/roles')
 }
 
 export function addRole(params) {
