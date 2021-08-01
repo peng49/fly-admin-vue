@@ -128,11 +128,6 @@ export const constantRoutes = [
     alwaysShow: true,
     children: [
       {
-        path: 'settings',
-        name: 'Setting',
-        component: () => import('@/views/system/settings'),
-        meta: { title: '通用设置' }
-      }, {
         path: 'system-config',
         name: 'system.system-config',
         component: () => import('@/views/system/config'),
