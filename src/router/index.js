@@ -84,6 +84,12 @@ export const constantRoutes = [
     meta: { title: '内容管理', icon: 'education' },
     children: [
       {
+        path: 'navigation',
+        name: 'Navigation',
+        component: () => import('@/views/theme/navigation'),
+        meta: { title: '导航管理' }
+      },
+      {
         path: 'column',
         name: 'Column',
         component: () => import('@/views/theme/column'),
